@@ -19,17 +19,25 @@ def plot_array_bool(arr):
     plt.yticks(range(arr.shape[0]))
     plt.show()
 
+def save_sparse_matrix_txt(sparse_arr, title):
+    # Saving the array in a text file
+    arr = sparse_arr.toarray()
+    np.savetxt(str(title)+'.txt', arr)
+
 
 # Fonction pour créer les coefficients complexes pour les PML. 
-def PML_S(Nx, Ny, layers, w):
+def PML_S(Nx, Ny, layers, w, d):
     Sx = np.ones((Ny,Nx), dtype=complex)
     Sy = np.ones((Ny,Nx), dtype=complex)
     sigma_x = np.zeros((Ny,Nx), dtype=np.double)
     sigma_y = np.zeros((Ny,Nx), dtype=np.double)
 
     # initialisation pour les coefficient alpha et alpha*
-    sigma_max = 5
     m = 4
+    kappa = 4.2194*10**-10
+    rho = 1025
+    z = np.sqrt(kappa*rho)
+    sigma_max = (m+1)*np.log(1*10**-7)/(2*z*layers*d)
 
     for i in np.arange(0, Ny,1):
         for j in np.arange(0, Nx,1):
@@ -134,10 +142,13 @@ for fact in fact_ar:
    
     
     # Initialisation de la fréquence
-    w = 100000000
+    w = 6283.1853 # 1000 Hz
+    w = 6283.1853*100 # 1000 Hz
+    w = 100000
+    #w = 6283.1853*4 # 1000 Hz
 
     # Matrice des coefficients complexes S
-    Sx, Sy, sigma_x, sigma_y = PML_S(Nx, Ny, 10, w)
+    Sx, Sy, sigma_x, sigma_y = PML_S(Nx, Ny, 10, w, d)
 
     # Initialisation d'une liste qui va contenir les matrices de coefficients
     matrice_coefficients_list = []
@@ -309,7 +320,6 @@ plt.show()
     
 
     
-
 
 
 
