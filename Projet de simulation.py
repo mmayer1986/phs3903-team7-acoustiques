@@ -107,14 +107,31 @@ for fact in fact_ar:
     Ny=int(np.rint(Ly/d+1)); # Nombre de nœuds le long de Y
 
     # Initialisation de la source ponctuelle
-    S=np.zeros((Ny,Nx),dtype=np.double)
-    for i in np.arange(1,Ny+1,1):
-        y=(i-1)*d
-        for j in np.arange(1,Nx+1,1):
-            x=(j-1)*d
-            # Source mise au milieu du domaine (pour l'instant)
-            if i==(Ny/2) and j==(Nx/2):
-                S[i-1, j-1] = 1000
+    cx, cy = int(Nx/2), int(Ny/2)
+    taille = 10
+    force = 10
+
+    S=np.zeros((Nx,Ny),dtype=np.double) #Initiatlise la source
+    #noeudij = x+(y-1)*Ny #Trouve l'index du centre dans le vecteur S
+    grid = np.zeros((Nx,Ny)) #Crée une grille des positions en 2D
+    I,J=np.meshgrid(np.arange(grid.shape[1]),np.arange(grid.shape[0])) #Crée des listes d'index en x et y pour chaque ligne/col
+    dist=np.sqrt((I-cx)**2+(J-cy)**2) #trouve la distance entre les points pour une source circulaire
+
+    grid[np.where(dist<taille)]=1 #donne une valeur de 1 à tous les points dans la grille dans le cercle
+    for i in range(len(I[0])):
+        for j in range(len(J[0])):
+            if grid[I[i,j], J[i,j]]==1:
+               #print(f"index i = {i}, index j = {j}, index ij = {i+(j-1)*Ny}")
+               S[i,j]=force
+
+
+    # show result in a simple plot
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+    ax.pcolormesh(grid)
+    ax.set_aspect('equal')
+    plt.show()
+   
     
     # Initialisation de la fréquence
     w = 100000000
